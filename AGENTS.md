@@ -4,7 +4,6 @@
 
 This document describes the Product Owner Agent workflow designed to assist Product Owners in conducting research, developing product requirements, and creating implementation-ready user stories. The agent automates the generation of structured reports that serve as guidelines for product implementation.
 
-**Platform:** OpenCode (https://opencode.ai/)  
 **Target Audience:** Product Owners  
 **Project Scope:** Single product/project  
 **Execution Model:** Manual triggering of independent workflow steps
@@ -19,7 +18,6 @@ This document describes the Product Owner Agent workflow designed to assist Prod
 4.  [Commands & Usage](#commands--usage)
 5.  [Report Templates](#report-templates)
 6.  [Best Practices](#best-practices)
-7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -80,12 +78,6 @@ Phase 3: USER STORIES
 ---
 
 ## Setup & Configuration
-
-### Prerequisites
-
-1. **OpenCode Account**: Active account at https://opencode.ai/
-2. **Brave Search API Access**: MCP (Model Context Protocol) integration configured
-3. **Directory Structure**: Create output directories in your project root
 
 ### Initial Setup
 
@@ -163,25 +155,19 @@ mkdir -p templates
 
 **Command:**
 ```
-/generate-research-summary [topic]
+/generate-research-summary --topic [topic] --resources-location [resources-directory](optional)
 ```
 
 **Description:** Conducts research on a given topic and generates a comprehensive research summary report.
 
 **Input Requirements:**
 - **Topic**: Clear topic or research question
-- **Optional**: Manual notes, observations, URLs to analyze
-- **Optional**: Specific research objectives or questions
+- **Optional**: Manual notes, observations, URLs to analyze provided under resources-location
 
 **Example Usage:**
 
 ```
-/generate-research-summary User Authentication Best Practices
-
-Additional context:
-- Focus on passwordless authentication
-- Target enterprise users
-- Consider security and UX balance
+/generate-research-summary --topic "User Authentication Best Practices" --resources-location "./resources/authentication"
 ```
 
 **Output:**
@@ -202,7 +188,7 @@ Additional context:
 
 **Command:**
 ```
-/generate-prd [feature/product name]
+/generate-prd --feature [feature/product name] --research [research-summary-file-path](optional)
 ```
 
 **Description:** Creates a comprehensive Product Requirements Document for a feature or product.
@@ -210,19 +196,11 @@ Additional context:
 **Input Requirements:**
 - **Feature/Product Name**: Clear name for what's being built
 - **Optional**: Reference to research summary file
-- **Optional**: Business context and constraints
-- **Optional**: Known user needs or requirements
 
 **Example Usage:**
 
 ```
-/generate-prd Passwordless Authentication
-
-Context:
-- Based on research in: ./agent-output/research/user-authentication-best-practices-research-summary.md
-- Target: Enterprise SaaS users
-- Timeline: Q2 2026 release
-- Must integrate with existing SSO
+/generate-prd --feature "Passwordless Authentication" --research "./agent-output/research/user-authentication-best-practices-research-summary.md"
 ```
 
 **Output:**
@@ -244,7 +222,7 @@ Context:
 
 **Command:**
 ```
-/generate-user-stories [feature name]
+/generate-user-stories --feature [feature name] --prd [prd-file-path](optional)
 ```
 
 **Description:** Breaks down a feature into detailed, development-ready user stories with acceptance criteria.
@@ -252,18 +230,11 @@ Context:
 **Input Requirements:**
 - **Feature Name**: Name of feature to break down
 - **Optional**: Reference to PRD file
-- **Optional**: Specific features or epics to focus on
-- **Optional**: Priority guidance
 
 **Example Usage:**
 
 ```
-/generate-user-stories Passwordless Authentication
-
-Context:
-- Based on PRD: ./agent-output/prd/passwordless-authentication-prd.md
-- Focus on MVP features first
-- Sprint capacity: 8-10 story points per sprint
+/generate-user-stories --feature "Passwordless Authentication" --prd "./agent-output/prd/passwordless-authentication-prd.md"
 ```
 
 **Output:**
@@ -294,48 +265,6 @@ All templates are stored in `./templates/` directory:
 ├── prd-template.md
 └── user-stories-template.md
 ```
-
-### Template Customization
-
-While templates are standardized, you can customize them for your project needs:
-
-#### To Customize a Template:
-
-1.  **Copy the template**: Make a project-specific version
-   ```bash
-   cp templates/prd-template.md templates/prd-template-custom. md
-   ```
-
-2. **Modify sections**: Add, remove, or adjust sections based on:
-   - Project complexity
-   - Stakeholder requirements
-   - Team processes
-   - Industry-specific needs
-
-3. **Update agent instructions**: Inform the agent to use custom template
-   ```
-   /generate-prd Feature Name --template=custom
-   
-   Note: Use ./templates/prd-template-custom.md instead of default
-   ```
-
-#### Common Customizations:
-
-**For Small Features:**
-- Remove: Market Analysis section
-- Simplify: Technical Requirements
-- Reduce: Release Planning details
-
-**For Large Products:**
-- Add: Competitive Analysis deep-dive
-- Expand: Technical Architecture section
-- Include: Go-to-Market strategy
-
-**For Regulated Industries:**
-- Add: Compliance Requirements section
-- Expand: Security & Privacy section
-- Include: Audit Trail requirements
-
 ---
 
 ## Best Practices
@@ -354,22 +283,6 @@ While templates are standardized, you can customize them for your project needs:
 - Skip providing context about your product/users
 - Ignore existing research or data
 - Proceed to PRD without reviewing research findings
-
-**Example Good Research Request:**
-```
-/generate-research-summary Mobile Payment Solutions for Small Businesses
-
-Focus areas:
-- Payment processing speed and reliability
-- Integration with existing POS systems
-- Pricing models and transaction fees
-- Security and compliance requirements
-- User onboarding and setup complexity
-
-Target users: Small retail businesses (1-10 employees)
-Geography: North America
-Competitors to analyze: Square, Stripe Terminal, PayPal Zettle
-```
 
 ---
 
@@ -397,7 +310,6 @@ Before approving PRD, verify:
 - [ ] All functional requirements have acceptance criteria
 - [ ] Technical feasibility has been considered
 - [ ] Dependencies and risks are documented
-- [ ] MVP scope is realistic for timeline
 
 ---
 
@@ -408,9 +320,7 @@ Before approving PRD, verify:
 - Keep stories small and independently testable
 - Write clear acceptance criteria (Given/When/Then)
 - Include technical notes for developers
-- Estimate story points
 - Identify dependencies between stories
-- Prioritize using clear criteria (MoSCoW, etc.)
 
 ❌ **DON'T:**
 - Create stories that are too large (>8 story points)
@@ -422,40 +332,10 @@ Before approving PRD, verify:
 **Story Quality Checklist:**
 - [ ] Story follows "As a...  I want... So that..." format
 - [ ] Acceptance criteria are specific and testable
-- [ ] Story is small enough to complete in one sprint
 - [ ] Dependencies are clearly identified
 - [ ] Technical notes provide enough context for developers
 - [ ] Story has clear business value
 - [ ] Edge cases and error scenarios are covered
-
----
-
-### 4. Workflow Best Practices
-
-✅ **Iterative Approach:**
-```
-1. Generate research summary
-2. Review findings with stakeholders
-3. Update research if gaps identified
-4. Generate PRD based on validated research
-5. Review PRD with technical team
-6. Refine PRD based on feedback
-7. Generate user stories from approved PRD
-8. Review stories with development team
-9. Refine and estimate stories
-```
-
-✅ **Version Control:**
-- Store all outputs in Git repository
-- Use meaningful commit messages
-- Tag releases (e.g., `v1.0-prd`, `v2.0-stories`)
-- Track changes in document change logs
-
-✅ **Collaboration:**
-- Share research summaries with stakeholders early
-- Get technical team input before finalizing PRD
-- Review user stories with developers before sprint planning
-- Collect feedback and iterate
 
 ---
 
@@ -471,201 +351,19 @@ Examples:
 - passwordless-authentication-user-stories.md
 ```
 
-**Version Management:**
-When updating existing documents:
-```
-[feature-name]-[document-type]-v[version]. md
-
-Examples:
-- passwordless-authentication-prd-v2.md
-- passwordless-authentication-user-stories-v3.md
-```
-
 **Directory Structure:**
 ```
 agent-output/
 ├── research/
 │   ├── passwordless-authentication-research-summary. md
 │   ├── mobile-payments-research-summary.md
-│   └── archived/
-│       └── old-research-2025.md
 ├── prd/
 │   ├── passwordless-authentication-prd.md
-│   ├── passwordless-authentication-prd-v2.md
 │   └── mobile-payments-prd.md
 └── user-stories/
     ├── passwordless-authentication-user-stories.md
-    ├── passwordless-authentication-user-stories-sprint-2.md
     └── mobile-payments-user-stories.md
 ```
-
----
-
-## Troubleshooting
-
-### Common Issues & Solutions
-
-#### Issue 1: Agent generates incomplete reports
-
-**Symptoms:**
-- Missing sections from template
-- Shallow or generic content
-- No specific details
-
-**Solutions:**
-1.  Provide more detailed input and context
-2. Reference specific sections you need completed
-3. Ask follow-up questions to fill gaps
-4. Regenerate with explicit instructions
-
-**Example Fix:**
-```
-/generate-prd Passwordless Authentication
-
-Please ensure the following sections are comprehensive:
-- Technical Requirements (specify API needs)
-- Security Requirements (detailed authentication flows)
-- Integration Requirements (list all systems)
-
-Reference: ./agent-output/research/user-authentication-best-practices-research-summary.md
-```
-
----
-
-#### Issue 2: Agent can't find referenced files
-
-**Symptoms:**
-- Error messages about missing files
-- Agent doesn't incorporate previous research/PRD
-
-**Solutions:**
-1. Verify file path is correct (use relative paths)
-2. Check file actually exists in specified location
-3.  Ensure file has been saved from previous command
-4. Copy relevant content directly in prompt if needed
-
-**Example Fix:**
-```
-/generate-prd Passwordless Authentication
-
-Context from research (since file path isn't working):
-[Paste key findings from research summary]
-```
-
----
-
-#### Issue 3: Output file not saved or saved to wrong location
-
-**Symptoms:**
-- Can't find generated file
-- File saved with wrong name or location
-
-**Solutions:**
-1. Verify output directory exists
-2. Check agent has write permissions
-3. Manually specify output path in command
-4. Review agent configuration for correct directory settings
-
-**Example Fix:**
-```bash
-# Ensure directories exist
-mkdir -p agent-output/{research,prd,user-stories}
-
-# Then regenerate
-/generate-prd Passwordless Authentication --output=./agent-output/prd/
-```
-
----
-
-#### Issue 4: Generated user stories are too large
-
-**Symptoms:**
-- Stories estimated at >8-13 story points
-- Stories cover multiple features
-- Can't be completed in one sprint
-
-**Solutions:**
-1. Request agent to break down into smaller stories
-2. Specify desired story point range
-3. Focus on one specific aspect of feature
-
-**Example Fix:**
-```
-/generate-user-stories Passwordless Authentication
-
-Please focus only on the "Email Magic Link" authentication method. 
-Break down into stories that are 2-5 story points each.
-Each story should be completable in 2-3 days.
-```
-
----
-
-#### Issue 5: Research summary lacks depth
-
-**Symptoms:**
-- Surface-level findings
-- Missing competitive analysis
-- No user insights
-- Generic recommendations
-
-**Solutions:**
-1.  Provide more specific research questions
-2. Share URLs to analyze
-3. Include manual research notes
-4. Specify what depth of analysis you need
-
-**Example Fix:**
-```
-/generate-research-summary Passwordless Authentication
-
-Deep-dive areas:
-1. Analyze these 5 competitor products: [URLs]
-2. Research WebAuthn vs. Magic Links vs. SMS OTP
-3. Find security vulnerability reports from last 2 years
-4. Identify adoption rates and user sentiment data
-5. Review NIST authentication guidelines
-
-Focus on enterprise use cases specifically.
-```
-
----
-
-#### Issue 6: Brave Search API not returning results
-
-**Symptoms:**
-- Research summary missing web research
-- Only uses provided inputs
-- No external data
-
-**Solutions:**
-1. Verify Brave Search API (MCP) is configured correctly
-2. Check API quota hasn't been exceeded
-3. Test API connection separately
-4. Provide more URLs/resources directly if API unavailable
-
-**Workaround:**
-```
-/generate-research-summary Passwordless Authentication
-
-Note: If Brave Search isn't available, please analyze these resources:
-- [URL 1]
-- [URL 2]
-- [Attached research document]
-
-And flag that additional web research is needed.
-```
-
----
-
-### Getting Help
-
-If you encounter issues not covered here:
-
-1. **Check OpenCode Documentation**: https://opencode.ai/docs
-2. **Review Agent Logs**: Check for error messages or warnings
-3. **Test with Simple Example**: Try generating report for a simple, well-defined feature
-4. **Verify Setup**: Ensure all prerequisites and configuration are correct
-5. **Iterate**: Start with basic command, add complexity gradually
 
 ---
 
@@ -675,9 +373,9 @@ If you encounter issues not covered here:
 
 | Command | Purpose | Output Location |
 |---------|---------|----------------|
-| `/generate-research-summary [topic]` | Research and insights | `./agent-output/research/` |
-| `/generate-prd [feature-name]` | Product requirements | `./agent-output/prd/` |
-| `/generate-user-stories [feature-name]` | User stories | `./agent-output/user-stories/` |
+| `/generate-research-summary --topic [topic] --resources-location [resources-directory](optional)` | Research and insights | `./agent-output/research/` |
+| `/generate-prd --feature [feature/product name] --research [research-summary-file-path](optional)` | Product requirements | `./agent-output/prd/` |
+| `/generate-user-stories --feature "Passwordless Authentication" --prd "./agent-output/prd/passwordless-authentication-prd.md"` | User stories | `./agent-output/user-stories/` |
 
 ---
 
@@ -695,7 +393,6 @@ If you encounter issues not covered here:
 **Rules:**
 - Use kebab-case (lowercase with hyphens)
 - Be descriptive but concise
-- Include version number when updating
 - Use `. md` extension for markdown files
 
 ---
@@ -708,21 +405,6 @@ While currently a standalone workflow, consider these future integrations:
 - Auto-create issues from user stories
 - Link PRD as issue context
 - Tag with labels from priority
-
-**Project Management Tools:**
-- Export user stories to Jira/Linear/Azure DevOps
-- Sync story points and status
-- Link to PRD documentation
-
-**Collaboration Tools:**
-- Post research summaries to Slack channels
-- Notify stakeholders when PRD is ready
-- Share user stories with development team
-
-**Analytics Integration:**
-- Pull user behavior data into research
-- Auto-update metrics in PRD
-- Track success criteria post-launch
 
 ---
 
@@ -766,52 +448,4 @@ While currently a standalone workflow, consider these future integrations:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | 2025-12-07 | Initial AGENTS. md created | [Your Name] |
-
----
-
-## Quick Start Guide
-
-**First Time Setup (5 minutes):**
-
-1. Create output directories:
-   ```bash
-   mkdir -p agent-output/{research,prd,user-stories} templates
-   ```
-
-2. Save the three report templates to `./templates/`
-
-3. Configure OpenCode agent with provided system prompt
-
-4.  Verify Brave Search API (MCP) is connected
-
-**Your First Workflow (30 minutes):**
-
-1. **Research** (10 min):
-   ```
-   /generate-research-summary [Your Topic]
-   ```
-   Review output in `./agent-output/research/`
-
-2. **PRD** (10 min):
-   ```
-   /generate-prd [Your Feature]
-   
-   Reference: ./agent-output/research/[your-research-file].md
-   ```
-   Review output in `./agent-output/prd/`
-
-3. **User Stories** (10 min):
-   ```
-   /generate-user-stories [Your Feature]
-   
-   Reference: ./agent-output/prd/[your-prd-file].md
-   ```
-   Review output in `./agent-output/user-stories/`
-
-**You're ready to go!** 🚀
-
----
-
-**Questions or Feedback?**  
-Update this document as you refine your workflow and discover best practices.
+| 1.0.1 | 2025-12-08 | Initial AGENTS. md created | Erodotos Demetriou |
